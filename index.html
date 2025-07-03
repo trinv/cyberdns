@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberDNS - Bảo Vệ Gia Đình Khỏi Mối Đe Dọa Trực Tuyến</title>
+    <meta name="description" content="CyberDNS - Dịch vụ DNS bảo mật hàng đầu Việt Nam, bảo vệ gia đình khỏi malware, phishing và nội dung có hại. Miễn phí dùng thử!">
+    <meta name="theme-color" content="#22c55e">
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #22c55e;
+            --primary-dark: #16a34a;
+            --primary-light: #86efac;
+            --secondary-color: #0f172a;
+            --accent-color: #f59e0b;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Utility Classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+        }
+
+        .header.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-dashboard {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-dashboard:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text .highlight {
+            color: var(--primary-color);
+            -webkit-text-fill-color: var(--primary-color);
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* Shield Animation */
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shield-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shield {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 4rem;
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.3);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .floating-threats {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .threat {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            animation: orbit 8s linear infinite;
+        }
+
+        .threat:nth-child(1) { animation-delay: 0s; }
+        .threat:nth-child(2) { animation-delay: -2s; }
+        .threat:nth-child(3) { animation-delay: -4s; }
+        .threat:nth-child(4) { animation-delay: -6s; }
+
+        /* Section Styles */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(34, 197, 94, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Pricing card styles */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .pricing-card.popular {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--secondary-color);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        /* Scroll animations */
+        .scroll-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .nav-menu {
+                display: none;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                gap: 1rem;
+                z-index: 1001;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .mobile-menu-overlay.active {
+                display: block;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-stats {
+                justify-content: center;
+                gap: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .shield-container {
+                transform: scale(0.8);
+            }
+        }
+
+        /* Loading indicator */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--primary-light);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1002;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Indicator -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="#" class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberDNS
+                </a>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#home" class="nav-link">Trang chủ</a></li>
+                    <li><a href="#features" class="nav-link">Tính năng</a></li>
+                    <li><a href="#pricing" class="nav-link">Bảng giá</a></li>
+                    <li><a href="#contact" class="nav-link">Liên hệ</a></li>
+                    <li><a href="/dashboard.html" class="btn btn-dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Vào Dashboard
+                    </a></li>
+                    <li><a href="#" class="btn btn-primary" onclick="showTrialForm(event)">Dùng thử miễn phí</a></li>
+                </ul>
+                <button class="mobile-menu-btn" id="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="fade-in-up">
+                        <span class="highlight">Bảo Vệ Gia Đình</span><br>
+                        Khỏi Mối Đe Dọa<br>
+                        Trực Tuyến
+                    </h1>
+                    <p class="fade-in-up" style="animation-delay: 0.2s;">
+                        CyberDNS - Dịch vụ DNS bảo mật hàng đầu Việt Nam, chặn malware, phishing và nội dung có hại. Bảo vệ toàn diện cho gia đình bạn trên mọi thiết bị.
+                    </p>
+                    <div class="hero-actions fade-in-up" style="animation-delay: 0.4s;">
+                        <a href="#" class="btn btn-primary" onclick="showTrialForm(event)">
+                            <i class="fas fa-rocket"></i>
+                            Dùng thử miễn phí
+                        </a>
+                        <a href="#features" class="btn btn-outline">
+                            <i class="fas fa-play"></i>
+                            Tìm hiểu thêm
+                        </a>
+                    </div>
+                    <div class="hero-stats fade-in-up" style="animation-delay: 0.6s;">
+                        <div class="stat-item">
+                            <span class="stat-number counter" data-target="50000000">0</span>
+                            <div class="stat-label">Mối đe dọa đã chặn</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number counter" data-target="10000">0</span>
+                            <div class="stat-label">Gia đình tin tưởng</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number counter" data-target="99.9">0</span>
+                            <div class="stat-label">% Thời gian hoạt động</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual fade-in-up" style="animation-delay: 0.8s;">
+                    <div class="shield-container">
+                        <div class="shield">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="floating-threats">
+                            <div class="threat">
+                                <i class="fas fa-virus"></i>
+                            </div>
+                            <div class="threat">
+                                <i class="fas fa-bug"></i>
+                            </div>
+                            <div class="threat">
+                                <i class="fas fa-skull-crossbones"></i>
+                            </div>
+                            <div class="threat">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-header scroll-fade">
+                <h2 class="section-title">Tính Năng Vượt Trội</h2>
+                <p class="section-subtitle">
+                    CyberDNS cung cấp bộ giải pháp bảo mật toàn diện, được thiết kế riêng cho gia đình Việt Nam.
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card scroll-fade">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI Phát Hiện Mối Đe Dọa</h3>
+                    <p>Sử dụng trí tuệ nhân tạo để phát hiện và chặn các mối đe dọa mới chưa từng xuất hiện. Cập nhật liên tục 24/7.</p>
+                </div>
+                <div class="feature-card scroll-fade">
+                    <div class="feature-icon">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <h3>Kiểm Soát Phụ Huynh</h3>
+                    <p>Công cụ mạnh mẽ giúp phụ huynh quản lý và bảo vệ trẻ em khi sử dụng internet. Lọc nội dung theo độ tuổi.</p>
+                </div>
+                <div class="feature-card scroll-fade">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Thống Kê Chi Tiết</h3>
+                    <p>Dashboard trực quan hiển thị tất cả hoạt động bảo mật và sử dụng internet của gia đình.</p>
+                </div>
+                <div class="feature-card scroll-fade">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Bảo Vệ Đa Thiết Bị</h3>
+                    <p>Một tài khoản bảo vệ tất cả thiết bị trong gia đình: điện thoại, máy tính, tablet, TV thông minh.</p>
+                </div>
+                <div class="feature-card scroll-fade">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Bảo Vệ 24/7</h3>
+                    <p>Hoạt động liên tục mà không cần bảo trì, đảm bảo gia đình bạn luôn được an toàn.</p>
+                </div>
+                <div class="feature-card scroll-fade">
+                    <div class="feature-icon">
+                        <i class="fas fa-flag"></i>
+                    </div>
+                    <h3>Tối Ưu Cho Việt Nam</h3>
+                    <p>Được thiết kế và tối ưu hóa đặc biệt cho thị trường và văn hóa Việt Nam.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section" id="pricing" style="background: var(--bg-light);">
+        <div class="container">
+            <div class="section-header scroll-fade">
+                <h2 class="section-title">Bảng Giá Phù Hợp Mọi Gia Đình</h2>
+                <p class="section-subtitle">
+                    Chọn gói dịch vụ phù hợp với nhu cầu và ngân sách của gia đình bạn
+                </p>
+            </div>
+            <div class="pricing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 1000px; margin: 0 auto;">
+                <div class="pricing-card scroll-fade" style="background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; position: relative; border: 2px solid transparent;">
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Miễn Phí</h3>
+                    <p style="color: var(--text-light); margin-bottom: 2rem;">Bảo vệ cơ bản cho gia đình nhỏ</p>
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 2rem;">
+                        <span style="font-size: 2.5rem; font-weight: 800; color: var(--primary-color);">0</span>
+                        <span style="font-size: 1.2rem; color: var(--text-light);">đ</span>
+                        <span style="font-size: 0.9rem; color: var(--text-light);">/tháng</span>
+                    </div>
+                    <ul style="list-style: none; margin-bottom: 2rem;">
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Chặn malware & phishing cơ bản
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Bảo vệ 3 thiết bị
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Báo cáo tuần
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Hỗ trợ email
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Tốc độ DNS chuẩn
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-outline" style="width: 100%; justify-content: center;" onclick="showTrialForm(event)">
+                        Dùng thử miễn phí
+                    </a>
+                </div>
+                
+                <div class="pricing-card popular scroll-fade" style="background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; position: relative; border: 2px solid var(--primary-color); transform: scale(1.05);">
+                    <span style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--primary-color); color: white; padding: 0.5rem 1.5rem; border-radius: 25px; font-size: 0.8rem; font-weight: 600;">PHỔ BIẾN NHẤT</span>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Gia Đình</h3>
+                    <p style="color: var(--text-light); margin-bottom: 2rem;">Bảo vệ toàn diện cho cả gia đình</p>
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 2rem;">
+                        <span style="font-size: 2.5rem; font-weight: 800; color: var(--primary-color);">99,000</span>
+                        <span style="font-size: 1.2rem; color: var(--text-light);">đ</span>
+                        <span style="font-size: 0.9rem; color: var(--text-light);">/tháng</span>
+                    </div>
+                    <ul style="list-style: none; margin-bottom: 2rem;">
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Tất cả tính năng gói Miễn phí
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            AI phát hiện mối đe dọa nâng cao
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Kiểm soát phụ huynh đầy đủ
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Không giới hạn thiết bị
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Báo cáo chi tiết hàng ngày
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Tốc độ DNS premium
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Hỗ trợ 24/7
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="showTrialForm(event)">
+                        Chọn gói này
+                    </a>
+                </div>
+                
+                <div class="pricing-card scroll-fade" style="background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; position: relative; border: 2px solid transparent;">
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Doanh Nghiệp</h3>
+                    <p style="color: var(--text-light); margin-bottom: 2rem;">Giải pháp bảo mật cho công ty</p>
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 2rem;">
+                        <span style="font-size: 2.5rem; font-weight: 800; color: var(--primary-color);">299,000</span>
+                        <span style="font-size: 1.2rem; color: var(--text-light);">đ</span>
+                        <span style="font-size: 0.9rem; color: var(--text-light);">/tháng</span>
+                    </div>
+                    <ul style="list-style: none; margin-bottom: 2rem;">
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Tất cả tính năng gói Gia đình
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Quản lý tập trung
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            API tích hợp
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Báo cáo tuân thủ
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Whitelist tùy chỉnh
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            SLA 99.9%
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Hỗ trợ ưu tiên
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--text-dark);">
+                            <i class="fas fa-check" style="color: var(--primary-color);"></i>
+                            Đào tạo nhân viên
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-outline" style="width: 100%; justify-content: center;" onclick="showContactForm(event)">
+                        Liên hệ tư vấn
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="scroll-fade">
+                <h2>Bắt Đầu Bảo Vệ Gia Đình Ngay Hôm Nay</h2>
+                <p>Đăng ký dùng thử miễn phí 14 ngày, không cần thẻ tín dụng. Trải nghiệm sự an toàn và yên tâm cho gia đình bạn.</p>
+                <div class="hero-actions" style="justify-content: center;">
+                    <a href="#" class="btn btn-primary" style="background: white; color: var(--primary-color);" onclick="showTrialForm(event)">
+                        <i class="fas fa-rocket"></i>
+                        Dùng thử miễn phí 14 ngày
+                    </a>
+                    <a href="tel:1900123456" class="btn btn-outline" style="border-color: white; color: white;">
+                        <i class="fas fa-phone"></i>
+                        Gọi tư vấn: 1900-123-456
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CyberDNS</h3>
+                    <p style="color: #9ca3af; margin-bottom: 1rem;">
+                        Dịch vụ DNS bảo mật hàng đầu Việt Nam, bảo vệ gia đình khỏi mọi mối đe dọa trực tuyến.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3>Sản phẩm</h3>
+                    <ul>
+                        <li><a href="#">DNS bảo mật cho gia đình</a></li>
+                        <li><a href="#">Giải pháp doanh nghiệp</a></li>
+                        <li><a href="#">API tích hợp</a></li>
+                        <li><a href="#">Ứng dụng mobile</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Hỗ trợ</h3>
+                    <ul>
+                        <li><a href="#">Hướng dẫn cài đặt</a></li>
+                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                        <li><a href="#">Liên hệ hỗ trợ</a></li>
+                        <li><a href="#">Báo cáo sự cố</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <ul>
+                        <li>📧 support@cyberdns.vn</li>
+                        <li>📞 1900-123-456</li>
+                        <li>📍 Tầng 10, Tòa nhà ABC<br>123 Đường XYZ, Quận 1, TP.HCM</li>
+                        <li>⏰ Hỗ trợ 24/7</li>
+                    </ul>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #374151; padding-top: 1rem; text-align: center; color: #9ca3af;">
+                <p>&copy; 2024 CyberDNS. Tất cả quyền được bảo lưu. | <a href="#" style="color: var(--primary-color);">Chính sách bảo mật</a> | <a href="#" style="color: var(--primary-color);">Điều khoản sử dụng</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Trial Form Modal -->
+    <div id="trial-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 2rem; border-radius: 20px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.5rem; color: var(--text-dark);">Đăng Ký Dùng Thử Miễn Phí</h3>
+                <button onclick="closeTrialForm()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+            </div>
+            <form id="trial-form" onsubmit="submitTrialForm(event)">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Họ và tên *</label>
+                    <input type="text" name="name" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Email *</label>
+                    <input type="email" name="email" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Số điện thoại</label>
+                    <input type="tel" name="phone" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Số lượng thiết bị cần bảo vệ</label>
+                    <select name="devices" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; background: white;">
+                        <option value="1-3">1-3 thiết bị</option>
+                        <option value="4-10">4-10 thiết bị</option>
+                        <option value="11+">Trên 10 thiết bị</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    Bắt Đầu Dùng Thử Miễn Phí
+                </button>
+                <p style="text-align: center; color: var(--text-light); font-size: 0.9rem; margin-top: 1rem;">
+                    Không cần thẻ tín dụng • Hủy bất cứ lúc nào
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let scrollTimeout;
+        let counterAnimated = false;
+
+        // Page loading
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 500);
+        });
+
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const navMenu = document.getElementById('nav-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+        function toggleMobileMenu() {
+            navMenu.classList.toggle('active');
+            mobileMenuOverlay.classList.toggle('active');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+                document.body.style.overflow = 'hidden';
+            } else {
+                icon.className = 'fas fa-bars';
+                document.body.style.overflow = '';
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay.addEventListener('click', toggleMobileMenu);
+
+        // Close mobile menu when clicking nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (navMenu.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+
+        // Header scroll effect with debouncing
+        const header = document.getElementById('header');
+        let lastScrollTop = 0;
+
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                
+                lastScrollTop = scrollTop;
+            }, 10);
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const target = document.querySelector(targetId);
+                if (target) {
+                    const headerHeight = header.offsetHeight;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Counter animation with proper formatting
+        function animateCounter(element, target, duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const updateCounter = () => {
+                current += increment;
+                
+                if (current >= target) {
+                    current = target;
+                    
+                    // Format the final number
+                    if (target >= 1000000) {
+                        element.textContent = (target / 1000000).toFixed(0) + 'M+';
+                    } else if (target >= 1000) {
+                        element.textContent = (target / 1000).toFixed(0) + 'K+';
+                    } else if (target % 1 !== 0) {
+                        element.textContent = target.toFixed(1) + '%';
+                    } else {
+                        element.textContent = target + '+';
+                    }
+                } else {
+                    // Format during animation
+                    if (target >= 1000000) {
+                        element.textContent = Math.floor(current / 1000000) + 'M+';
+                    } else if (target >= 1000) {
+                        element.textContent = Math.floor(current / 1000) + 'K+';
+                    } else if (target % 1 !== 0) {
+                        element.textContent = current.toFixed(1) + '%';
+                    } else {
+                        element.textContent = Math.floor(current) + '+';
+                    }
+                    requestAnimationFrame(updateCounter);
+                }
+            };
+            
+            requestAnimationFrame(updateCounter);
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Animate counters only once
+                    if (!counterAnimated && entry.target.querySelector('.counter')) {
+                        counterAnimated = true;
+                        const counters = entry.target.querySelectorAll('.counter');
+                        counters.forEach(counter => {
+                            const target = parseFloat(counter.getAttribute('data-target'));
+                            animateCounter(counter, target);
+                        });
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements
+        document.querySelectorAll('.scroll-fade').forEach(el => {
+            observer.observe(el);
+        });
+
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) {
+            observer.observe(heroSection);
+        }
+
+        // Trial form functions
+        function showTrialForm(event) {
+            event.preventDefault();
+            const modal = document.getElementById('trial-modal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTrialForm() {
+            const modal = document.getElementById('trial-modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function submitTrialForm(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            // Show notification
+            showNotification('Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn trong 24h.', 'success');
+            
+            // Reset form and close modal
+            event.target.reset();
+            closeTrialForm();
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type} show`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+                <button class="notification-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('trial-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'trial-modal') {
+                closeTrialForm();
+            }
+        });
+
+        // Optimize scroll performance with passive listeners
+        window.addEventListener('scroll', () => {}, { passive: true });
+        window.addEventListener('touchstart', () => {}, { passive: true });
+
+        // Add contact form function
+        function showContactForm(event) {
+            event.preventDefault();
+            const modal = document.getElementById('trial-modal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Update form for contact
+            const modalTitle = modal.querySelector('h3');
+            modalTitle.textContent = 'Liên Hệ Tư Vấn Doanh Nghiệp';
+            
+            const form = document.getElementById('trial-form');
+            form.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Họ và tên *</label>
+                    <input type="text" name="name" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Email công ty *</label>
+                    <input type="email" name="email" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Số điện thoại *</label>
+                    <input type="tel" name="phone" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Tên công ty *</label>
+                    <input type="text" name="company" required style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Số lượng nhân viên</label>
+                    <select name="employees" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; background: white;">
+                        <option value="1-10">1-10 người</option>
+                        <option value="11-50">11-50 người</option>
+                        <option value="51-200">51-200 người</option>
+                        <option value="201+">Trên 200 người</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Nhu cầu tư vấn</label>
+                    <textarea name="message" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    Gửi Yêu Cầu Tư Vấn
+                </button>
+                <p style="text-align: center; color: var(--text-light); font-size: 0.9rem; margin-top: 1rem;">
+                    Chuyên viên sẽ liên hệ trong vòng 24h làm việc
+                </p>
+            `;
+        }
+
+        // Performance optimization: Lazy load images if any
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            imageObserver.unobserve(img);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        // Add structured data for SEO
+        const structuredData = {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "CyberDNS",
+            "description": "Dịch vụ DNS bảo mật hàng đầu Việt Nam",
+            "url": "https://cyberdns.vn",
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "1900-123-456",
+                "contactType": "customer service",
+                "availableLanguage": "Vietnamese"
+            }
+        };
+
+        const ldScript = document.createElement('script');
+        ldScript.type = 'application/ld+json';
+        ldScript.textContent = JSON.stringify(structuredData);
+        document.head.appendChild(ldScript);
+    </script>
+</body>
+</html>
